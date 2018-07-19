@@ -1,0 +1,390 @@
+
+
+html {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+/* Container */
+	.container {
+		margin: 0 auto;
+		max-width: 100%;
+		width: 1200px;
+	}/*
+	@media screen and (max-width: 1680px) {
+		.container {
+			width: 1200px;
+		}
+	}
+	@media screen and (max-width: 1280px) {
+			.container {
+			width: calc(100% - 70px);
+		}
+	}
+	@media screen and (max-width: 980px) {
+		.container {
+			width: calc(100% - 100px);
+		}
+	}
+	@media screen and (max-width: 736px) {
+		.container {
+				width: calc(100% - 40px);
+		}
+	}*/
+
+/*	row		*/
+	.row {
+		display: inline-block;
+		flex-wrap: wrap;
+		box-sizing: border-box;
+		align-items: stretch;
+		width: 100%;
+	}
+	
+	
+	
+/* Header */
+	#header-wrapper {
+		background-image: -moz-linear-gradient(top, #008dab, #007294);
+		background-image: -webkit-linear-gradient(top, #008dab, #007294);
+		background-image: -ms-linear-gradient(top, #008dab, #007294);
+		background-image: linear-gradient(top, #008dab, #007294);
+		background-color: #007294;
+	}
+
+	#header {
+		background-image: -moz-linear-gradient(top, #008ead, #007b9d);
+		background-image: -webkit-linear-gradient(top, #008ead, #007b9d);
+		background-image: -ms-linear-gradient(top, #008ead, #007b9d);
+		background-image: linear-gradient(top, #008ead, #007b9d);
+		-moz-box-sizing: content-box;
+		-webkit-box-sizing: content-box;
+		-ms-box-sizing: content-box;
+		box-sizing: content-box;
+		position: relative;
+		margin: 2.5% 0 2.5% 0;
+		padding: 0 40px 0 40px;
+		border-radius: 10px;
+		border: solid 1px #006e8b;
+		box-shadow: inset 0px 0px 0px 1px #12a0bf, 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+		background-color: #007b9d;
+		height: 86px;
+	}
+
+		#header h1 {
+			position: absolute;
+			left: 40px;
+			top: 0;
+			color: #fff;
+			font-size: 2.1em;
+			letter-spacing: -1px;
+			
+		}
+
+			#header h1 a {
+				color: #fff;
+				text-decoration: none;
+			}
+
+		#header nav {
+			position: absolute;
+			right: 40px;
+			top: 1px;
+			line-height: 84px;
+			font-size: 1.3em;
+			letter-spacing: -1px;
+		}
+
+			#header nav a {
+				display: inline-block;
+				text-decoration: none;
+				color: #fff;
+				padding: 0 25px 0 25px;
+				outline: 0;
+			}
+
+				#header nav a.current-page-item {
+					background-image: -moz-linear-gradient(top, #007b99, #007897);
+					background-image: -webkit-linear-gradient(top, #007b99, #007897);
+					background-image: -ms-linear-gradient(top, #007b99, #007897);
+					background-image: linear-gradient(top, #007b99, #007897);
+					background-color: #007897;
+					box-shadow: inset 0px 1px 5px 1px rgba(0, 0, 0, 0.1), 0px 0px 5px 1px rgba(255, 255, 255, 0.1);
+				}
+				
+
+				#header nav a:hover {
+					background-image: -moz-linear-gradient(top, #0782a0, #077d9b);
+					background-image: -webkit-linear-gradient(top, #0782a0, #077d9b);
+					background-image: -ms-linear-gradient(top, #0782a0, #077d9b);
+					background-image: linear-gradient(top, #0782a0, #077d9b);
+					background-color: #0882a1;
+					box-shadow: inset 0px 1px 5px 1px rgba(0, 0, 0, 0.05), 0px 0px 5px 1px rgba(255, 255, 255, 0.05);
+				}
+
+	
+/* main */
+	#main {
+		margin: 0 auto;
+		max-width: 90%;
+		padding-top: 1%;
+	}
+	
+	div.light {
+		display : inline-flex;
+	}
+	div.heavy {
+		display : block;
+	}
+	
+	div.containerButton {
+		padding-left : 20px;
+		margin: auto;
+		display: inline-block;
+	} 
+	
+	li.filter {
+		display: inline-flex;
+		
+	}
+	
+	
+/*	login	*/
+	#login {
+		display: block;
+		margin: 0 auto;
+		max-width: 90%;
+		padding-top: 1%;
+	}
+	
+	.submit{
+		margin: auto;
+	}
+	
+/* Filters	*/
+
+	#addFilter {
+		display: block;
+	}
+	
+	#Filter-List {
+		display: block;
+		/*width:250px;*/
+	}
+	table.filter_table td,th {
+		text-align: center;
+		padding: 5px;
+	} 
+	
+	#Filter-List li.filter-template {
+		display : none;
+	}
+	/*
+	.containerDelButton {
+		text-align: text-right;
+		margin: auto;
+	}
+	*/
+	input.delete {
+		color: red;
+	}
+	
+	p.text {
+		display: inline-block;
+	}
+	
+	li{
+		display: block;
+		height: 25px;
+	} 
+	
+/*	Tableau	*/
+
+/* define height and width of scrollable area. Add 16px to width for scrollbar          *//*
+	div.components {
+		clear: both;
+		border: 1px solid #963;
+		height: 285px;
+		overflow: hidden;
+		width: 800px;
+	}
+
+	table {
+		border-collapse: collapse;
+	}
+	table.components_table td, table.components_table  th {
+		text-align: center;
+		border: 1px solid black;
+		padding: 5px;
+		
+	}
+	/*
+	tbody {
+		overflow-y: scroll;
+	}
+	*/
+	
+	/*https://codepen.io/nirmalkc/pen/oswdB *//*
+
+
+table, td {
+	color: #000;
+	font: normal normal 12px Verdana, Geneva, Arial, Helvetica, sans-serif
+}
+
+
+
+/* define width of table. IE browsers only                 *//*
+div.components table {
+	float: left;
+	 width: 740px 
+}
+
+/* define width of table. Add 16px to width for scrollbar.           */
+/* All other non-IE browsers.                                        *//*
+html>body div.components table {
+	/* width: 756px */
+}
+
+/* set table header to a fixed position. WinIE 6.x only                                       */
+/* In WinIE 6.x, any element with a position property set to relative and is a child of       */
+/* an element that has an overflow property set, the relative value translates into fixed.    */
+/* Ex: parent element DIV with a class of tableContainer has an overflow property set to auto */
+/*
+thead.fixedHeader tr {
+	position: relative;
+}
+
+/* set THEAD element to have block level attributes. All other non-IE browsers            */
+/* this enables overflow to work on TBODY element. All other non-IE, non-Mozilla browsers */
+
+/* make the TH elements pretty *//*
+thead.fixedHeader th {/*
+	background: #C96;
+	border-left: 1px solid #EB8;
+	border-right: 1px solid #B74;
+	border-top: 1px solid #EB8;
+	font-weight: normal;
+	padding: 4px 3px;
+	text-align: left*//*
+}
+
+html>body tbody.scrollContent {
+	display: block;
+	height: 262px;
+	overflow: auto;
+	width: 100%
+}
+
+html>body thead.fixedHeader {
+	display: table;
+	overflow: auto;
+	width: 100%
+}*/
+
+
+
+
+
+
+
+
+div.components {
+    padding-top: 40px;	
+}
+
+/* define height and width of scrollable area. Add 16px to width for scrollbar          */
+div.tableContainer {
+	clear: both;
+	border: 1px solid #963;
+	height: 285px;
+	overflow: auto;
+	width: 900px
+}
+
+/* Reset overflow value to hidden for all non-IE browsers. */
+html>body div.tableContainer {
+	overflow: hidden;
+	width: 100%;/* 900px;	*/
+}
+
+/* define width of table. IE browsers only                 */
+div.tableContainer table {
+	float: left;
+	/* width: 740px */
+}
+
+/* define width of table. Add 16px to width for scrollbar.           */
+/* All other non-IE browsers.                                        */
+html>body div.tableContainer table {
+	/* width: 756px */
+}
+
+/* set table header to a fixed position. WinIE 6.x only                                       */
+/* In WinIE 6.x, any element with a position property set to relative and is a child of       */
+/* an element that has an overflow property set, the relative value translates into fixed.    */
+/* Ex: parent element DIV with a class of tableContainer has an overflow property set to auto */
+
+thead.fixedHeader tr {
+	position: relative;
+}
+
+/* set THEAD element to have block level attributes. All other non-IE browsers            */
+/* this enables overflow to work on TBODY element. All other non-IE, non-Mozilla browsers */
+
+/* make the TH elements pretty */
+thead.fixedHeader th {
+	background: #C96;
+	border-left: 1px solid #EB8;
+	border-right: 1px solid #B74;
+	border-top: 1px solid #EB8;
+	font-weight: normal;
+	padding: 4px 3px;
+	text-align: left
+}
+
+html>body tbody.scrollContent {
+	display: block;
+	height: 262px;
+	overflow: auto;
+	width: 100%
+}
+
+html>body thead.fixedHeader {
+	display: table;
+	overflow: auto;
+	/*width: 100%; */
+	width: calc(100% + 13px);
+}
+
+/* make TD elements pretty. Provide alternating classes for striping the table */
+/* http://www.alistapart.com/articles/zebratables/                             */
+tbody.scrollContent td, tbody.scrollContent tr.normalRow td {
+	background: #FFF;
+	border-bottom: none;
+	border-left: none;
+	border-right: 1px solid #CCC;
+	border-top: 1px solid #DDD;
+	padding: 2px 3px 3px 4px
+}
+
+
+
+tbody.scrollContent tr.alternateRow td {
+	background: #EEE;
+	border-bottom: none;
+	border-left: none;
+	border-right: 1px solid #CCC;
+	border-top: 1px solid #DDD;
+	padding: 2px 3px 3px 4px
+}
+
+
+
+
+
+

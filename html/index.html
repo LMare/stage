@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<!-- html pour l'interface Criticity -->
+<html>
+	<head>
+		<title>Criticité</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	
+	<body>
+		<div id="wrapper">
+			<div id="header-wrapper">
+				<div class="container">
+					<div class="row">
+						<header id="header">
+							<h1>Criticité</h1>
+							<nav id="nav">
+								<a class="current-page-item" id='nav_component'>Composants</a>
+								<a id="nav_users">Utilisateurs</a> <!-- show for admin -->
+								<a id="nav_login">Connexion</a> <!-- hidden if connected -->
+								<!-- <a>Mon Compte</a> -->
+								<a id="nav_logout">Déconnexion</a>
+								<a id="nav_preferences">Préférences</a>
+							</nav>
+						</header>
+					</div>
+				</div>
+			</div>
+			
+			
+			<div id="main">
+				<div class="filter">
+					<div class="containerFilter">
+						<div class="light">
+							<h2>Liste des filtres</h2>
+							<div class="containerButton">	
+								<input type="button" value="Afficher" id="buttonShowFilters"/>
+								<input type="button" value="Masquer" id="buttonHideFilters" style="display : none"/>
+							</div>
+						</div>
+						<div class="heavy" id="heavy" style="display : none"> <!-- Show/hide in function of button -->
+							<input type="button" value="Ajouter un filtre" id="buttonAddFilter"/> <!-- open pop-up to add a specific filter -->
+							
+							<form id="addFilter" style="display : none">
+								<table class="filter_table">
+									<tr>
+										<td>nom colonne</td>
+										<td>operateur</td>
+										<td>valeur</td>
+									</tr>
+									<tr>
+										<td><input type="text" id="addFilter_Category"/></td>
+										<td><select id="addFilter_Operator">
+											<option value="=">=</option>
+											<option value=">">></option>
+											<option value="<"><</option>	
+										</select></td>
+										<td><input type="text" id="addFilter_Operand"/></td>
+									</tr>
+								</table>
+								<input type="button" id="addFilter_valid" value="valider"/>
+								<input type="button" id="addFilter_annul" value="annuler"/>
+							</form>
+							
+							<ul id="Filter-List">
+								<li class="filter-template" > <!-- TODO: Specific display for each column of table ?  -->
+									<input type="hidden" class="Category" value=""/>
+									<input type="hidden" class="Operator" value=""/>
+									<input type="hidden" class="Operand" value=""/>
+									<p class="text"> C'est un filtre template ! </p>
+									<div class="containerButton">
+										<input type="button" id="filter_delete" class="delete" value="X"/>
+									</div>
+								</li> 
+							</ul>
+						</div>
+					</div>
+				</div>
+				
+				
+				<div class="components" >
+				
+				<!--
+					<table class="components_table" cellpadding="0" cellspacing="0" width="100%">
+						<caption>Tableau des criticités des composants</caption>
+						<thead class="fixedHeader">
+							<tr id="Tab-line">
+								<th width="20%" scope="S3E_NUMBER">S3E NUMBER</th>
+								<th width="20%" scope="S3E_NAME">S3E NAME</th>
+								<th width="20%" scope="S3E_VERSION">S3E VERSION</th>
+								<th width="20%" scope="S3E_ITERATION">S3E ITERATION</th>
+								<th width="20%" scope="CRITICITY_GLOBALE">CRITICITY GLOBALE</th>
+								
+							</tr>
+						</thead>
+							
+						<tbody id="tbody" class="scrollContent">
+							<tr>
+								<td width="20%" scope="S3E_NUMBER">5454</td>
+								<td width="20%" scope="S3E_NAME">test</td>
+								<td width="20%" scope="S3E_VERSION">0</td>
+								<td width="20%" scope="S3E_ITERATION">1</td>
+								<td width="20%" scope="CRITICITY_GLOBALE">1000</td>
+								
+							</tr>
+							<tr>
+								<td scope="S3E_NUMBER">5454</td>
+								<td scope="S3E_NAME">test</td>
+								<td scope="S3E_VERSION">0</td>
+								<td scope="S3E_ITERATION">1</td>
+								<td scope="CRITICITY_GLOBALE">1000</td>
+								
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+				
+				-->
+				
+				<div id="tableContainer" class="tableContainer">
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
+					<thead class="fixedHeader">
+						<tr>
+							<th width="20%">Header 1</th>
+							<th width="30%">Header 2</th>
+							<th width="50%">Header 3</th>
+						</tr>
+					</thead>
+					<tbody class="scrollContent">
+						<tr>
+							<td width="20%">Cell Content 1</td>
+							<td width="30%">Cell Content 2</td>
+							<td width="48%">Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>More Cell Content 1</td>
+							<td>More Cell Content 2</td>
+							<td>More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1</td>
+							<td>Even More Cell Cont asdkfh asoid hfoas ghdfoasgdojf gasdkjfgasd jfgaskjdfg kjasdgf kjasd gjkasgdfkj agskjdfgaskdjfgent 2</td>
+							<td>Even More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>More Cell Content 1</td>
+							<td>More Cell Content 2</td>
+							<td>More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1</td>
+							<td>Even More Cell Cont asdkfh asoid hfoas ghdfoasgdojf gasdkjfgasd jfgaskjdfg kjasdgf kjasd gjkasgdfkj agskjdfgaskdjfgent 2</td>
+							<td>Even More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>More Cell Content 1</td>
+							<td>More Cell Content 2</td>
+							<td>More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1</td>
+							<td>Even More Cell Cont asdkfh asoid hfoas ghdfoasgdojf gasdkjfgasd jfgaskjdfg kjasdgf kjasd gjkasgdfkj agskjdfgaskdjfgent 2</td>
+							<td>Even More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>More Cell Content 1</td>
+							<td>More Cell Content 2</td>
+							<td>More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1</td>
+							<td>Even More Cell Cont asdkfh asoid hfoas ghdfoasgdojf gasdkjfgasd jfgaskjdfg kjasdgf kjasd gjkasgdfkj agskjdfgaskdjfgent 2</td>
+							<td>Even More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>More Cell Content 1</td>
+							<td>More Cell Content 2</td>
+							<td>More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1</td>
+							<td>Even More Cell Cont asdkfh asoid hfoas ghdfoasgdojf gasdkjfgasd jfgaskjdfg kjasdgf kjasd gjkasgdfkj agskjdfgaskdjfgent 2</td>
+							<td>Even More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>More Cell Content 1</td>
+							<td>More Cell Content 2</td>
+							<td>More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1</td>
+							<td>Even More Cell Cont asdkfh asoid hfoas ghdfoasgdojf gasdkjfgasd jfgaskjdfg kjasdgf kjasd gjkasgdfkj agskjdfgaskdjfgent 2</td>
+							<td>Even More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>More Cell Content 1</td>
+							<td>More Cell Content 2</td>
+							<td>More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1</td>
+							<td>Even More Cell Cont asdkfh asoid hfoas ghdfoasgdojf gasdkjfgasd jfgaskjdfg kjasdgf kjasd gjkasgdfkj agskjdfgaskdjfgent 2</td>
+							<td>Even More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>More Cell Content 1</td>
+							<td>More Cell Content 2</td>
+							<td>More Cell Content 3</td>
+						</tr>
+						<tr>
+							<td>Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1 Even More Cell Content 1</td>
+							<td>Even More Cell Cont asdkfh asoid hfoas ghdfoasgdojf gasdkjfgasd jfgaskjdfg kjasdgf kjasd gjkasgdfkj agskjdfgaskdjfgent 2</td>
+							<td>Even More Cell Content 3</td>
+						</tr>
+					</tbody>
+					</table>
+					</div>
+
+				
+				
+			</div>
+			
+	
+			<div id="login" style="display : none">
+				<form>
+					<span>Identifiant</span>
+					<input type="text" id="login_id"/> <br/>
+					<span>Mot de passe</span>
+					<input type="password" id="login_mdp"/><br/>
+					<input class="submit" id="login_submit" type="button" value="connexion"/>
+				</form>
+			</div>
+			
+			<div class="footer">
+				
+			</div>
+			
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/main.js"></script>
+			
+		</div>
+	</body>
+</html>
