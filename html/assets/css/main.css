@@ -288,9 +288,62 @@ html>body thead.fixedHeader {
 
 
 
+/*test resize*//*
+table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+td {
+  border: 2px solid black;
+  padding: 0;
+  margin: 0px;
+  overflow: auto;
+  min-width: 120px;
+}
 
+td div, th div {
+  border: 0;
+  width: auto;
+  height: auto;
+  min-width: 120px;
+  
+  resize: horizontal;
+  margin: 0px;
+  padding: 0px;
+  display:block;
+  overflow: auto;
 
+}
+*/
+/*test2*/
+/*
+table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+td , th{
+  border: 1px solid black;
+  padding: 0;
+  margin: 0px;
 
+}
+th {
+	resize: horizontal;
+	overflow: auto;
+}
+th span.resize {
+	float: right;
+	margin: -2px -2px -2px 0;
+	height: 20px !important;
+	position: relative;
+	cursor: e-resize;
+	display: inline;
+	overflow: hidden;
+}
+
+th span.name {
+	
+}*/
 
 
 div.components {
@@ -348,17 +401,17 @@ thead.fixedHeader th {
 }
 
 html>body tbody.scrollContent {
-	display: block;
+	/*display: block; /*retirer le display pour pouvoir resize*/
 	height: 262px;
 	overflow: auto;
 	width: 100%
 }
 
 html>body thead.fixedHeader {
-	display: table;
+	/*display: table;/*retirer le display pour pouvoir resize*/
 	overflow: auto;
-	/*width: 100%; */
-	width: calc(100% + 13px);
+	width: 100%;
+	/*width: calc(100% + 13px);*/
 }
 
 /* make TD elements pretty. Provide alternating classes for striping the table */
@@ -383,8 +436,7 @@ tbody.scrollContent tr.alternateRow td {
 	padding: 2px 3px 3px 4px
 }
 
-
-
-
-
+tr th div {
+    text-align: center;
+}
 
