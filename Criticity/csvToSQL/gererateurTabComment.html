@@ -1,0 +1,221 @@
+<html>
+	<head>
+		<title>Generateur SQL</title>
+		<meta charset="utf-8" />
+	</head>
+	<body>
+		<p>Génération en cours</p>
+	</body>
+	<script src="../assets/js/jquery-v3.3.1.min.js"></script>
+	<script type="text/javascript">
+		//Chargement du fichier csv
+		
+		var _NB_COL = 9; //Mettre le nombre théorique de colonne dans le tableur 
+		
+		var NomColCom = {
+			"S3E_NUMBER" : 1-1,
+			"ID_USER_ICS" : 8-1,
+			"TEXT_COMMENT" : 6-1,
+			"DATE_LOG" : 7-1
+		}
+		
+		
+		var tab = [];
+		var ligneRejetee = {};
+		var lastLigne = [];
+		
+		$.get({
+			"mimeType": 'text/plain; charset= Windows-1252',
+			"url": "./remarque.csv",
+			"dataType": "text",
+			"Content-Type": "text" //"text/csv;",
+			//"charset" : "utf-8"
+		}).then(function(data) {
+			console.log(data);
+			
+			data = data.split("\n");
+			console.log(data);
+			console.log("debut");
+			var cpt = -1; //ligne dans le fichier csv
+			var ok = true;
+			
+			$.each(data, function() {
+				cpt++;
+				if(cpt >= 3) { //On ignore les 33 premieres lignes qui sont les titres des colonnes
+				var ligne = this;
+				ligne = ligne.split(";"); // \t
+				if(ok) {
+					//console.log(ligne.length);
+					if(ligne.length == _NB_COL) { // c'est ok, la ligne comporte le bon nombre de colonnes
+						addCorrect(ligne)
+					} else if(ligne.length < _NB_COL) { //pas bon, il y a très certainement un retour à la ligne dans un des commentaires 
+						lastLigne = ligne; //on enregistre
+						ok = false;
+					} else if(ligne.length > _NB_COL) { // il y a des ";" dans les commentaires... 
+						if (!ligneRejetee[ligne.length]) ligneRejetee[ligne.length] = [];
+						(ligneRejetee[ligne.length]).push(ligne);
+					}
+				} else { // !ok 
+					// La ligne precedante est incomplete
+					// il va falloir fusionner les 2 lignes 
+					if (ligne.length < _NB_COL) {
+						// on ajoute le contenue de la premiere colonne dans la derniere colonne de la ligne precedante
+						if (lastLigne != [] ) lastLigne[lastLigne.length -1] += " " + ligne[0];
+						// et on ajoute la fin
+						for(var i=1; i < ligne.length; i++) {
+							lastLigne.push(ligne[i]);
+						}
+						// check si ok
+						if(lastLigne.length == _NB_COL ) {
+							ok = true;
+							addCorrect(lastLigne);
+						} else if(lastLigne.length < _NB_COL) { 
+							//tjr pas bon, on recommence
+						} else if(lastLigne.length > _NB_COL) { 							
+							if (!ligneRejetee[lastLigne.length]) ligneRejetee[lastLigne.length] = [];
+							(ligneRejetee[lastLigne.length]).push(lastLigne);
+							ok = true;
+						}
+					} else {
+						console.log("FATAL ERROR : Fusionner n'est pas la solution ! ");
+						// on rejete les 2 au cas ou
+						// ligneRejetee.push(ligne);
+						// ligneRejetee.push(lastLigne);
+						ok = true;
+					}
+				}}
+				
+			});
+			
+			console.log("fin");
+			
+			console.log("réussi : ");
+			console.log(tab);
+			console.log(tab.length);
+			console.log("");
+			
+			console.log("rejeter : ");
+			console.log(ligneRejetee);
+			console.log("");
+			
+			
+			console.log("Correction des éléments rejetés");
+			//TODO: corriger les ligneRejetee !!! 
+			
+			
+			var keys = Object.keys(ligneRejetee);
+			for (var cle in keys) {
+				var key = keys[cle];
+				if(key > _NB_COL) {
+					var nb_err = key - _NB_COL;
+					var arr = ligneRejetee[key];
+					// erreur possible : 5
+					$.each(arr, function() {
+						var ligne = this;
+						
+						while(!isDate(ligne[6]) ) {
+							
+							//console.log(ligne[51]);
+							ligne[5] += "; " + ligne[6];
+							ligne.splice(6, 1);
+							if(ligne.length == _NB_COL) return addCorrect(ligne);
+						}
+						
+						
+						console.log("WARNING : ligne non corrigée !!!");
+						console.log(ligne);
+					});
+					
+				} else console.log("WARNING: ERROR !!!!");
+			}
+			console.log(tab);
+			console.log(tab.length);
+			//console.log(ligneRejetee);
+			
+			//On retire les "faux commentaire"
+			var tabtmp = tab;
+			tab = [];
+			$.each(tabtmp, function() {
+				var ligne = this;
+				//console.log(ligne[0].substr(0, 10));
+				if(ligne[0].substr(0, 10) != "Last MAJ :") {
+					tab.push(ligne);
+				} else console.log("yep")
+			});
+			
+			console.log(tab)
+			
+			
+			
+			//retirer les doublons pour ne garder que les dernier commentaires
+			var tabSansDoublon = {};
+			for(var i = 0; i<tab.length; i++) {
+				tabSansDoublon[tab[i][0]] = tab[i];
+			}
+			// retirer les index
+			tab = Object.values(tabSansDoublon);
+			
+			
+			console.log("sansDoublon");
+			console.log(tab);
+			console.log(tab.length);
+			
+			
+			// Generation du SQL !!! 
+			
+			generateSQL_Comment();
+			
+			
+		}).catch(function(error) {
+			console.log(tab);
+			console.log(error);
+		});
+		
+		
+		
+		function addCorrect(ligne) {
+			if(ligne.length == _NB_COL) { 
+				if(ligne[0]) { 
+					tab.push(ligne);
+				} else { // ignorer les miliers de lignes vide à la fin
+					//console.log("STOP");
+					_STOP = true;
+					//console.log(ligne);
+				}
+			} else {
+				console.log("ERROR !!!");
+				console.log(ligne.length);
+			}
+		}
+		
+		
+		function isDate(str) {
+			return !isNaN(str.substring(0,1)) && str.charAt(2)=="/";
+		}
+		
+		
+		
+		function generateSQL_Comment() {
+			var sql = "";
+			
+			$.each(tab, function() { //TODO
+				var ligne = this;
+				sql += "INSERT INTO COMMENT_ICS(S3E_NUMBER, ID_USER_ICS, TEXT_COMMENT, DATE_LOG, LAST_COMMENT)";
+				sql += " VALUES (" + "'" + ligne[NomColCom['S3E_NUMBER']] + "'" + "," +
+								"'" + ligne[NomColCom['ID_USER_ICS']] + "'" + "," +
+								"'" + replaceAll(replaceAll(replaceAll((ligne[NomColCom['TEXT_COMMENT']]).trim(),'"""', '"'),'"" "', '"'),"'", "''") + "'" + "," + //C'est moche... regarder comment fonctionne les RegExp si le temps :P
+								" TO_DATE('" + ligne[NomColCom['DATE_LOG']] + "','DD/MM/YYYY HH24:MI')" + 
+								", " + 1 +
+								");<br/>";
+			});
+			
+			$('p').html(sql);
+			
+		}
+		function replaceAll(machaine, chaineARemaplacer, chaineDeRemplacement) {
+			return machaine.replace(new RegExp(chaineARemaplacer, 'g'), chaineDeRemplacement);
+		}
+		
+		
+	</script>
+<html>

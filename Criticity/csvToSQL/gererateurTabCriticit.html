@@ -1,0 +1,265 @@
+<html>
+	<head>
+		<title>Generateur SQL</title>
+		<meta charset="utf-8" />
+	</head>
+	<body>
+		<p>Génération en cours</p>
+	</body>
+	<script src="../assets/js/jquery-v3.3.1.min.js"></script>
+	<script type="text/javascript">
+		//Chargement du fichier csv
+		
+		var _NB_COL = 82; //Mettre le nombre théorique de colonne dans le tableur (change quand on importe des PACL)
+		var NomColCrit = 	{ // Correspondance entre les nom de colonne de la bdd et le numero de colonne dans le tableur // -1 pour le decalage d'indice
+										"S3E_NUMBER" : 1-1 ,
+										"CRITICITY_GLOBAL" : 47-1,
+										"RISQUE_QUALITATIF_ELEC" : 34-1,
+										"RISQUE_QUALITATIF_CPST" : 35-1,
+										"RISQUE_QUALITATIF_ASSEMBLY" : 36-1,
+										"RISQUE_QUALITATIF_RAD" : 37-1,
+										"MONOSOURCES" : 39-1,
+										"ORIGIN_US" : 40-1,
+										"ETCA" : 41-1,
+										"OQD" : 42-1,
+										"RISQUE_TRI" : 44-1,
+										"RISQUE_SOCIETE" : 45-1,
+										"DEPASSEMENT_SEUIL" : 49-1,
+										"CRITICITY_HANDLING_STORAGE" : 52-1,
+										"REMEDE" : 53-1,
+										"MAT_TECH" : 38-1,
+										"OTD" : 43-1,
+										"TEXT_COMMENT" : 54-1
+									}
+		
+		
+		
+		
+		var tab = [];
+		var ligneRejetee = {};
+		var lastLigne = [];
+		
+		$.get({
+			"mimeType": 'text/plain; charset= Windows-1252',
+			"url": "./Criticite_csv.csv",
+			"dataType": "text",
+			"Content-Type": "text" //"text/csv;",
+			//"charset" : "utf-8"
+		}).then(function(data) {
+			console.log(data);
+			
+			data = data.split("\n");
+			console.log(data);
+			console.log("debut");
+			var cpt = -1; //ligne dans le fichier csv
+			var ok = true;
+			
+			$.each(data, function() {
+				cpt++;
+				if(cpt >= 33) { //On ignore les 33 premieres lignes qui sont les titres des colonnes
+				var ligne = this;
+				ligne = ligne.split(";"); // \t
+				if(ok) {
+					//console.log(ligne.length);
+					if(ligne.length == _NB_COL) { // c'est ok, la ligne comporte le bon nombre de colonnes
+						addCorrect(ligne)
+					} else if(ligne.length < _NB_COL) { //pas bon, il y a très certainement un retour à la ligne dans un des commentaires 
+						lastLigne = ligne; //on enregistre
+						ok = false;
+					} else if(ligne.length > _NB_COL) { // il y a des ";" dans les commentaires... 
+						if (!ligneRejetee[ligne.length]) ligneRejetee[ligne.length] = [];
+						(ligneRejetee[ligne.length]).push(ligne);
+					}
+				} else { // !ok 
+					// La ligne precedante est incomplete
+					// il va falloir fusionner les 2 lignes 
+					if (ligne.length < _NB_COL) {
+						// on ajoute le contenue de la premiere colonne dans la derniere colonne de la ligne precedante
+						if (lastLigne != [] ) lastLigne[lastLigne.length -1] += " " + ligne[0];
+						// et on ajoute la fin
+						for(var i=1; i < ligne.length; i++) {
+							lastLigne.push(ligne[i]);
+						}
+						// check si ok
+						if(lastLigne.length == _NB_COL ) {
+							ok = true;
+							addCorrect(lastLigne);
+						} else if(lastLigne.length < _NB_COL) { 
+							//tjr pas bon, on recommence
+						} else if(lastLigne.length > _NB_COL) { 							
+							if (!ligneRejetee[lastLigne.length]) ligneRejetee[lastLigne.length] = [];
+							(ligneRejetee[lastLigne.length]).push(lastLigne);
+							ok = true;
+						}
+					} else {
+						console.log("FATAL ERROR : Fusionner n'est pas la solution ! ");
+						// on rejete les 2 au cas ou
+						// ligneRejetee.push(ligne);
+						// ligneRejetee.push(lastLigne);
+						ok = true;
+					}
+				}}
+				
+			});
+			
+			console.log("fin");
+			
+			console.log("réussi : ");
+			console.log(tab);
+			console.log(tab.length);
+			console.log("");
+			
+			console.log("rejeter : ");
+			console.log(ligneRejetee);
+			console.log("");
+			
+			
+			console.log("Correction des éléments rejetés");
+			//TODO: corriger les ligneRejetee !!! 
+			var keys = Object.keys(ligneRejetee);
+			for (var cle in keys) {
+				var key = keys[cle];
+				if(key > _NB_COL) {
+					var nb_err = key - _NB_COL;
+					var arr = ligneRejetee[key];
+					// erreur possible : 12, 51, 53, 54  -1
+					$.each(arr, function() {
+						var ligne = this;
+						if(!(ligne[12] === '' || ligne[12] === 'PPL' || ligne[12] === 'NPPL')) {
+							//console.log(ligne);
+							ligne[11] += "; " + ligne[12];
+							ligne.splice(12, 1);
+							if(ligne.length == _NB_COL) return addCorrect(ligne);
+						}
+						
+						while(!(ligne[51] === '' || !isNaN(ligne[51]))) {
+							
+							//console.log(ligne[51]);
+							ligne[50] += "; " + ligne[51];
+							ligne.splice(51, 1);
+							if(ligne.length == _NB_COL) return addCorrect(ligne);
+						}
+						
+						if(ligne[0] == 10514462) { //Cas particulier + difficile à détecter <= changer à la main
+							ligne[52] += "; " + ligne[53];
+							ligne.splice(53, 1);
+							if(ligne.length == _NB_COL) return addCorrect(ligne);
+						}
+						
+						while(!(ligne[54] === '' || ligne[54] == 1)) {
+							//console.log(ligne);
+							//console.log("erreur trouvé");
+							ligne[53] += "; " + ligne[54];
+							ligne.splice(54, 1);
+							if(ligne.length == _NB_COL) return addCorrect(ligne);
+						}
+						
+						console.log("WARNING : ligne non corrigée !!!");
+						console.log(ligne);
+					});
+					
+				} else console.log("WARNING: ERROR !!!!");
+			}
+			console.log(tab);
+			console.log(tab.length);
+			//console.log(ligneRejetee);
+			
+			//retirer les doublons
+			var tabSansDoublon = {};
+			for(var i = 0; i<tab.length; i++) {
+				tabSansDoublon[tab[i][0]] = tab[i];
+			}
+			// retirer les index
+			tab = Object.values(tabSansDoublon);
+			
+			
+			console.log("sansDoublon");
+			console.log(tab);
+			console.log(tab.length);
+			
+			// Generation du SQL !!! 
+			
+			//generateSQL_CriticiteTable();
+			generateSQL_Comment();
+			
+		}).catch(function(error) {
+			console.log(tab);
+			console.log(error);
+		});
+		
+		
+		
+		function addCorrect(ligne) {
+			if(ligne.length == _NB_COL) { 
+				if(ligne[0]) { 
+					tab.push(ligne);
+				} else { // ignorer les miliers de lignes vide à la fin
+					//console.log("STOP");
+					_STOP = true;
+					//console.log(ligne);
+				}
+			} else {
+				console.log("ERROR !!!");
+				console.log(ligne.length);
+			}
+		}
+		
+		
+		function generateSQL_CriticiteTable() {
+			var sql = "";
+			
+			$.each(tab, function() {
+				var ligne = this;
+				sql += "INSERT INTO CRITICITE(S3E_NUMBER, CRITICITY_GLOBAL, RISQUE_QUALITATIF_ELEC, RISQUE_QUALITATIF_CPST, RISQUE_QUALITATIF_ASSEMBLY, RISQUE_QUALITATIF_RAD, MONOSOURCES, ORIGIN_US, ETCA, OQD, RISQUE_TRI, RISQUE_SOCIETE, CRITICITY_HANDLING_STORAGE, REMEDE, MAT_TECH, OTD)"
+				sql += " VALUES (" + "'" + ligne[NomColCrit['S3E_NUMBER']] + "'" + "," +
+								ligne[NomColCrit['CRITICITY_GLOBAL']] + "," +
+								(ligne[NomColCrit['RISQUE_QUALITATIF_ELEC']] || "''") + "," + 
+								(ligne[NomColCrit['RISQUE_QUALITATIF_CPST']] || "''") + "," + 
+								(ligne[NomColCrit['RISQUE_QUALITATIF_ASSEMBLY']] || "''") + "," + 
+								(ligne[NomColCrit['RISQUE_QUALITATIF_RAD']] || "''") + "," + 
+								(ligne[NomColCrit['MONOSOURCES']] || "''") + "," + 
+								(ligne[NomColCrit['ORIGIN_US']] || "''") + "," + 
+								(ligne[NomColCrit['ETCA']] || "''") + "," + 
+								(ligne[NomColCrit['OQD']] || "''") + "," + 
+								(ligne[NomColCrit['RISQUE_TRI']] || "''") + "," + 
+								(ligne[NomColCrit['RISQUE_SOCIETE']] || "''") + "," +
+								(ligne[NomColCrit['CRITICITY_HANDLING_STORAGE']] || "''") + "," + 
+								"'" + replaceAll(replaceAll(replaceAll((ligne[NomColCrit['REMEDE']]).trim(),'"""', '"'),'"" "', '"'),"'", "''") + "'" + "," + //C'est moche... regarder comment fonctionne les RegExp si le temps :P
+								(ligne[NomColCrit['MAT_TECH']] || "''") + "," + 
+								(ligne[NomColCrit['OTD']] || "''") + 
+								");<br/>"
+			});
+			
+			$('p').html(sql);
+			
+		}
+		
+		
+		function generateSQL_Comment() {
+			var sql = "";
+			
+			$.each(tab, function() { //TODO
+				var ligne = this;
+				//sql += "INSERT INTO COMMENT_ICS(S3E_NUMBER, ID_USER_ICS, TEXT_COMMENT, DATE_LOG)";
+				sql += "INSERT INTO COMMENT_ICS(S3E_NUMBER, TEXT_COMMENT, LAST_COMMENT)";
+				sql += " VALUES (" + "'" + ligne[NomColCrit['S3E_NUMBER']] + "'" + "," +
+							//	"'" + ligne[NomColCom['ID_USER_ICS']] + "'" + "," +
+								"'" + replaceAll(replaceAll(replaceAll((ligne[NomColCrit['TEXT_COMMENT']]).trim(),'"""', '"'),'"" "', '"'),"'", "''") + "'" + "," + //C'est moche... regarder comment fonctionne les RegExp si le temps :P
+								" " + 1 +
+							//	" TO_DATE('" + ligne[NomColCom['DATE_LOG']] + "','DD/MM/YYYY HH24:MI:SS')" + 
+								");<br/>";
+			});
+			
+			$('p').html(sql);
+			
+		}
+		
+		
+		
+		function replaceAll(machaine, chaineARemaplacer, chaineDeRemplacement) {
+			return machaine.replace(new RegExp(chaineARemaplacer, 'g'), chaineDeRemplacement);
+		}
+		
+		
+	</script>
+<html>

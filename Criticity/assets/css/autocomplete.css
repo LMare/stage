@@ -1,0 +1,90 @@
+.autoComplete * {
+  box-sizing: border-box;
+}
+.autoComplete  {
+  font: 15px Arial;  
+}
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+.autoComplete select, .autoComplete input {
+  border: 1px solid #d4d4d4;
+  background-color: #f1f1f1;
+  padding: 4px;
+  font-size: 15px;
+  height: 30px;
+  width: 100px;
+  display: block;
+}
+
+.autoComplete div.div01 {
+	display: inline-block;
+	/*height : 80px;*/
+	width : 180px;
+	text-align: center;
+	
+}
+
+.autoComplete div.inline {
+	width : 230px;
+	display: inline-block;
+	position: absolute;
+}
+.autoComplete div span.horizontal {
+	display: block;
+	height: 19px;
+}
+.autoComplete div span.vertical {
+	display: inline-block;
+	width: 1px;
+}
+
+.autoComplete input[type=text], .autoComplete input[type=number] {
+	width: 170px;
+	
+}
+
+.autoComplete  input[type=submit] {
+  background-color: DodgerBlue;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.autoComplete  input[type=button] {
+	display: inline-block;
+	cursor: pointer;
+}
+
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  max-height : 197px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0;
+  
+}
+.autocomplete-items div {
+  padding: 4px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
+  width : 169px;
+  margin: 0;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9; 
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}
