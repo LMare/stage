@@ -26,7 +26,7 @@
 		
 		$.get({
 			"mimeType": 'text/plain; charset= Windows-1252',
-			"url": "./remarque.csv",
+			"url": "./remarque2.csv",
 			"dataType": "text",
 			"Content-Type": "text" //"text/csv;",
 			//"charset" : "utf-8"
@@ -34,7 +34,7 @@
 			console.log(data);
 			
 			data = data.split("\n");
-			console.log(data);
+			//console.log(data);
 			console.log("debut");
 			var cpt = -1; //ligne dans le fichier csv
 			var ok = true;

@@ -10,7 +10,7 @@
 	<script type="text/javascript">
 		//Chargement du fichier csv
 		
-		var _NB_COL = 82; //Mettre le nombre théorique de colonne dans le tableur (change quand on importe des PACL)
+		var _NB_COL = 83; //Mettre le nombre théorique de colonne dans le tableur (change quand on importe des PACL)
 		var NomColCrit = 	{ // Correspondance entre les nom de colonne de la bdd et le numero de colonne dans le tableur // -1 pour le decalage d'indice
 										"S3E_NUMBER" : 1-1 ,
 										"CRITICITY_GLOBAL" : 47-1,
@@ -41,15 +41,15 @@
 		
 		$.get({
 			"mimeType": 'text/plain; charset= Windows-1252',
-			"url": "./Criticite_csv.csv",
+			"url": "./Copie de Criticité cpts grade1-34-0.csv", //FICHIER A OUVRIR !!!!
 			"dataType": "text",
 			"Content-Type": "text" //"text/csv;",
 			//"charset" : "utf-8"
 		}).then(function(data) {
-			console.log(data);
+			//console.log(data);
 			
 			data = data.split("\n");
-			console.log(data);
+			//console.log(data);
 			console.log("debut");
 			var cpt = -1; //ligne dans le fichier csv
 			var ok = true;
@@ -179,8 +179,8 @@
 			
 			// Generation du SQL !!! 
 			
-			//generateSQL_CriticiteTable();
-			generateSQL_Comment();
+			generateSQL_CriticiteTable();
+			//generateSQL_Comment();
 			
 		}).catch(function(error) {
 			console.log(tab);
@@ -223,7 +223,7 @@
 								(ligne[NomColCrit['OQD']] || "''") + "," + 
 								(ligne[NomColCrit['RISQUE_TRI']] || "''") + "," + 
 								(ligne[NomColCrit['RISQUE_SOCIETE']] || "''") + "," +
-								(ligne[NomColCrit['CRITICITY_HANDLING_STORAGE']] || "''") + "," + 
+								(ligne[NomColCrit['CRITICITY_HANDLING_STORAGE']] || "0") + "," + 
 								"'" + replaceAll(replaceAll(replaceAll((ligne[NomColCrit['REMEDE']]).trim(),'"""', '"'),'"" "', '"'),"'", "''") + "'" + "," + //C'est moche... regarder comment fonctionne les RegExp si le temps :P
 								(ligne[NomColCrit['MAT_TECH']] || "''") + "," + 
 								(ligne[NomColCrit['OTD']] || "''") + 
@@ -234,7 +234,7 @@
 			
 		}
 		
-		
+		/*
 		function generateSQL_Comment() {
 			var sql = "";
 			
@@ -252,7 +252,7 @@
 			
 			$('p').html(sql);
 			
-		}
+		}*/
 		
 		
 		

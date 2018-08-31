@@ -105,7 +105,7 @@
 		
         Dim recordset
 		' //TODO: Changer la requête principale !!! 
-		StrSql = "Select distinct CRITICITE.S3E_NUMBER, S3E_VERSION, I3EP_DESCRIPTION, I3EP_FAMILY_CODE, I3EP_GROUP_CODE, PACL.GRADE, I3EP_PACKAGE, MATURITY, I3E_PLCSTATVAL, I3EP_PPL, I3EP_EXPORT_IS, I3EP_NS_CATEGORY, I3EP_CRITICALITY, I3EP_ESD_STATUS, I3EP_MSL, LEADTIME, CRITICITY_GLOBAL "
+		StrSql = "Select distinct CRITICITE.S3E_NUMBER, S3E_VERSION, I3EP_DESCRIPTION, I3EP_FAMILY_CODE, I3EP_GROUP_CODE, PACL.GRADE, I3EP_PACKAGE, PMP, MATURITY, I3E_PLCSTATVAL, I3EP_PPL, I3EP_EXPORT_IS, I3EP_NS_CATEGORY, I3EP_CRITICALITY, I3EP_ESD_STATUS, I3EP_MSL, LEADTIME, CRITICITY_GLOBAL "
 		StrSql =  StrSql + "from PACL, CRITICITE, PCDB_INFOS_3E, COMMENT_ICS, PPL where (PACL.ARTICLE(+) = CRITICITE.S3E_NUMBER) and (CRITICITE.S3E_NUMBER = PCDB_INFOS_3E.S3E_NUMBER(+)) and (CRITICITE.S3E_NUMBER = COMMENT_ICS.S3E_NUMBER(+)) and (CRITICITE.S3E_NUMBER = PPL.SDT_NUMBER(+))"
 			
 		' *** Ajout des filtres ***
@@ -130,7 +130,7 @@
 				recordset.MoveNext
 			wend
 		end if
-		if mime = "json" then
+		if mime = "json" then 
 			response.write("[")
 			first1 = true
 			while recordset.EOF=false
@@ -192,51 +192,14 @@
 		else
 			response.Status="401 Unauthorized"
 			response.write("You need to be ICS User for this operation")
+			response.write("USERNAME = "&SESSION("USERNAME")&" LVL2= "&canViewLevel(2)&" LVL3 = "&canViewLevel(3))
 		end if
 		response.end
 	end if
 	
-	if req = "updateCriticity" then '//Plus  utilisé normalement
-		if Canviewlevel(3) then '// Admin
-			'dim id, val
-			id = request("id")
-			val = request("value")
-			scope = request("scope")
-			
-			
-			getConnexion()
-			
-			set comm=Server.CreateObject("ADODB.command")
-			comm.ActiveConnection=conn
-			comm.CommandText="UPDATE_CRITICITY"
-			set param1 = comm.CreateParameter
-				param1.Name ="ARTICLE"
-				param1.type = 129				'adChar
-				param1.Direction = 1			'adParamInput
-				param1.Size = -1				'adCmdUnspecified
-				param1.Value = id
-				
-			comm.Parameters.Append param1
-			comm.Parameters.Append comm.CreateParameter("COL", 129, 1, -1, scope)
-			comm.Parameters.Append comm.CreateParameter("VAL", 129, 1, -1, val)
-			comm.Execute
-			
-			'retourner la nouvelle Criticité_Global
-			StrSql = "Select CRITICITY_GLOBAL from CRITICITE where S3E_NUMBER = '" + id + "'"
-			set mvarRecl = server.createobject("ADODB.RecordSet")
-			mvarRecl.open StrSql, conn
-			
-			response.write("{""CRITICITY_GLOBAL"" : " + JSON.stringify(mvarRecl.Fields.item("CRITICITY_GLOBAL").value) + "}")
-			mvarRecl.close
-			conn.close
-		else
-			response.Status="401 Unauthorized"
-			response.write("You need to be ADMIN for this operation")
-		end if
-		response.end
-	end if
 	
-	if req = "updateCriticity2" then
+	
+	if req = "updateCriticity" then
 		if Canviewlevel(3) then
 			dim values, setcmd
 			id = request("id")
@@ -254,24 +217,25 @@
 			next
 			
 			getConnexion()
+			actualDate = now()
+			'set comm=Server.CreateObject("ADODB.command")
+			'comm.ActiveConnection=conn
+			sql = "UPDATE CRITICITE SET " + setcmd + ", DATE_UPDATE = '" & actualDate & "', USER_UPDATE = '" + SESSION("USERNAME") + "' "+ " WHERE S3E_NUMBER = '" + id +"'"
+			'response.write(sql)
+			conn.Execute sql
 			
-			set comm=Server.CreateObject("ADODB.command")
-			comm.ActiveConnection=conn
-			comm.CommandText="UPDATE CRITICITE SET " + setcmd + "WHERE S3E_NUMBER = '" + id +"'"
-			'response.write(comm.CommandText)
-			comm.Execute
 			
 			'retourner la nouvelle Criticité_Global
 			StrSql = "Select CRITICITY_GLOBAL from CRITICITE where S3E_NUMBER = '" + id + "'"
 			set mvarRecl = server.createobject("ADODB.RecordSet")
 			mvarRecl.open StrSql, conn
-			
 			response.write("{""CRITICITY_GLOBAL"" : " + JSON.stringify(mvarRecl.Fields.item("CRITICITY_GLOBAL").value) + "}")
 			mvarRecl.close
 			conn.close
 		else
 			response.Status="401 Unauthorized"
-			response.write("You need to be ADMIN for this operation")
+			response.write("You need to be ADMIN for this operation ")
+			response.write("USERNAME = "&SESSION("USERNAME")&" LVL2= "&canViewLevel(2)&" LVL3 = "&canViewLevel(3))
 		end if
 		response.end
 	end if
@@ -315,7 +279,7 @@
 		set filter = JSON.parse(filter)
 		
 		dim s3e, exec, actualDate
-		s3e = "Select CRITICITE.S3E_NUMBER "
+		s3e = "Select distinct CRITICITE.S3E_NUMBER "
 		s3e =  s3e + "from PACL, CRITICITE, PCDB_INFOS_3E where (PACL.ARTICLE(+) = CRITICITE.S3E_NUMBER) and (CRITICITE.S3E_NUMBER = PCDB_INFOS_3E.S3E_NUMBER(+))"
 		s3e = s3e + getFilter(filter)
 		actualDate = now()
@@ -323,15 +287,11 @@
 		'response.write(String(actualDate))
 		
 		if table = "COMMENT_ICS" and column = "TEXT_COMMENT" and canViewLevel(2) then
-			'response.write(getFilter(filter))
 			
-			'//TODO: à finir dans oracle
 			getConnexion()
-			
 			set comm=Server.CreateObject("ADODB.command")
 			comm.ActiveConnection=conn
-			
-			comm.CommandText="TEST_EXECUTE"
+			comm.CommandText="MULTI_INSERT_COMMENT"
 			comm.Parameters.Append comm.CreateParameter("Filtre", 129, 1, -1, getFilter(filter))
 			set param1 = comm.CreateParameter
 				param1.Name ="TEXT"
@@ -351,19 +311,79 @@
 		elseif table = "CRITICITE" and not column = "CRITICITY_GLOBAL" and canViewLevel(3) then
 			exec = "UPDATE CRITICITE SET " + column + " = '" + value + "' , DATE_UPDATE = '" & actualDate & "', USER_UPDATE = '" + SESSION("USERNAME") + "' "
 			exec = exec + "WHERE S3E_NUMBER IN (" + s3e + ");" 
-			'// TODO rajouter des trigger dans la bdd pour la criticite globale
-			response.write(exec)
+			'response.write(exec)
 			conn.Execute exec
 			
 		else
 			response.Status="401 Unauthorized"
 			response.write("Unauthorized : Request incorrect or insufficient right")
+			response.write("USERNAME = "&SESSION("USERNAME")&" LVL2= "&canViewLevel(2)&" LVL3 = "&canViewLevel(3))
 		end if
 		
 		conn.close
 		
 	end if
 	
+	
+	if req = "getHideCol" then
+		getConnexion()
+		
+        
+		' //TODO: Changer la requête principale !!! 
+		StrSql = "Select TABLE_ID, COLUMN_ID From PREFERENCES Where USER_ID = '" + SESSION("USERNAME") + "';"
+        set recordset = server.createobject("ADODB.RecordSet")
+        recordset.open StrSql, conn
+		
+		
+		dim pref, Components, Detail, Sources
+		set Components = JSON.parse("{}")
+		set Detail = JSON.parse("{}")
+		set Sources = JSON.parse("{}")
+		
+		pref = "{ ""Components"" : {}, ""Detail"" : {}, ""Sources"" : {} }"
+		set pref = JSON.parse(pref)
+		
+		while recordset.EOF=false
+			col = recordset.Fields.item("COLUMN_ID")
+			tab = recordset.Fields.item("TABLE_ID")
+			'response.write("" + col + tab)
+			if tab="Components" then
+				Components.set col, true
+			elseif tab="Detail" then
+				Detail.set col, true
+			elseif tab="Sources" then
+				Sources.set col, true
+			end if
+			recordset.MoveNext
+		wend
+		conn.close
+		response.write("{""Components"" : " + JSON.stringify(Components) + ", ""Detail"" : " + JSON.stringify(Detail) +", ""Sources"" : " + JSON.stringify(Sources) + "}")
+	end if
+	
+	
+	if req = "hideCol" then
+		if not(SESSION("USERNAME") = "") then
+			col = request("col")
+			tab = request("tab")
+			getConnexion()
+			sql = "INSERT INTO PREFERENCES VALUES ('" + tab + "', '" + col + "', '" + SESSION("USERNAME") + "')"
+			response.write(sql)
+			conn.execute sql
+			conn.close
+		end if
+	end if
+	
+	if req = "showCol" then
+		if not(SESSION("USERNAME") = "") then
+			col = request("col")
+			tab = request("tab")
+			getConnexion()
+			sql = "DELETE FROM PREFERENCES WHERE TABLE_ID = '" + tab + "'AND COLUMN_ID = '" + col + "'AND USER_ID = '" + SESSION("USERNAME") + "'"
+			response.write(sql)
+			conn.execute sql
+			conn.close
+		end if
+	end if
 	
 	function getConnexion()
 		ConnectionString = "Driver={Oracle in instantclient10_2};Dbq=APP_D;Uid=CRITCOMPO;Pwd=CRITICIT;"

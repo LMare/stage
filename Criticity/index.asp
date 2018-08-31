@@ -25,16 +25,20 @@
 	<body>
 		<div id="wrapper">
 			<div id="header-wrapper">
+			<!-- <img src="assets/image/logo Thales Alenia Space-Leonardo.jpg" alt="logo" width="179" height="72" style="padding-left:75%;"> -->
+				<div style="display: inline-block;position: absolute;left: 40px;padding: 25px 40px 25px 24px;">
+					<img src="assets/image/logo Thales Alenia Space-Leonardo.jpg" alt="logo" style="margin: 2% 1% 2% 1%;border: 2px white solid; border-radius: 10px;" height="72" width="179">
+				</div>
 				<div class="container">
 					<div class="row">
 						<header id="header">
 							<h1>Criticité</h1>
 							<nav id="nav">
 								<a class="current-page-item" id='nav_component'>Composants</a>
-						<!--		<a id="nav_login">Connexion</a> <!-- hidden if connected --> 
-								<!-- <a>Mon Compte</a> -->
-								<a id="nav_logout" >Déconnexion</a>
+						<!--		<a id="nav_login">Connexion</a>   
+								<a id="nav_logout" >Déconnexion</a>   -->
 								<a id="nav_preferences">Préférences</a>
+								<a id="nav_expot">Export</a>
 							</nav>
 						</header>
 					</div>
@@ -57,24 +61,6 @@
 								<!--<input type="button" value="Ajouter un filtre" id="buttonAddFilter"/> --><!-- open pop-up to add a specific filter -->
 							</div>
 							<form class="autoComplete" id="addFilter" AUTOCOMPLETE=OFF>
-								<!--
-								<table class="filter_table">
-									<tr>
-										<td>nom colonne</td>
-										<td>operateur</td>
-										<td>valeur</td>
-									</tr>
-									<tr>
-										<td><input type="text" id="addFilter_Category"/></td>
-										<td><select id="addFilter_Operator">
-											<option value="=">=</option>
-											<option value="like">contient</option>
-											<option value=">">></option>
-											<option value="<"><</option>
-										</select></td>
-										<td><input type="text" id="addFilter_Operand"/></td>
-									</tr>
-								</table> -->
 								<div class="div01">
 									Nom Colonne
 									<input type="text" id="addFilter_Category"/>
@@ -101,14 +87,14 @@
 							</form>
 							
 							<ul id="Filter-List">
-								<li class="filter-template" > <!-- TODO: Specific display for each column of table ?  -->
+								<li class="filter-template" > 
 									<div class="containerButton">
 										<input type="button" id="filter_delete" class="delete" value="X"/>
 									</div>
 									<input type="hidden" class="Category" value=""/>
 									<input type="hidden" class="Operator" value=""/>
 									<input type="hidden" class="Operand" value=""/>
-									<p class="text"> C'est un filtre template ! </p>
+									<p class="text"></p>
 								</li> 
 							</ul>
 						</div>
@@ -128,7 +114,7 @@
 							<th scope="I3EP_GROUP_CODE" size="small">Group Code</th>
 							<th scope="GRADE" size="medium">Grade</th>
 							<th scope="I3EP_PACKAGE" size="medium">Package</th>
-				<!--		<th scope="NONE" size="small">industrial price</th>   -->
+							<th scope="PMP" size="small">PMP</th>   
 							<th scope="MATURITY" size="large">Maturity</th>
 							<th scope="I3E_PLCSTATVAL" size="small">PLC status</th>
 				<!--			<th scope="I3E_PLCSTATTYPETOUL" size="large">PLC Status Type</th>  -->
@@ -154,7 +140,7 @@
 						</tr>	
 					</thead>
 					<tbody id="tbody" class="scrollContent">
-						<tr class="trResizeTbody important" style="visibility: collapse"> <!-- Permet le resize de la partie tbody (ameliorer la fonction => en rajoutant des widthMin ??? )-->
+						<tr class="trResizeTbody important" style="visibility: collapse"> <!-- Permet de bien dimentionner le  tbody-->
 							<!-- ***  /!\ Doit avoir le même nombre de <td> qu'il y a de <th> /!\ *** -->
 							<td scope="S3E_NUMBER" size="large"></td>
 							<td scope="S3E_VERSION" size="small"></td>
@@ -163,7 +149,7 @@
 							<td scope="I3EP_GROUP_CODE" size="small"></td>
 							<td scope="GRADE" size="medium"></td>
 							<td scope="I3EP_PACKAGE" size="medium"></td>
-				<!--		<td scope="NONE" size="small">industrial price</td>  -->
+							<td scope="PMP" size="small"></td>
 							<td scope="MATURITY" size="large"></td>
 							<td scope="I3E_PLCSTATVAL" size="small"></td>
 				<!--			<td scope="I3E_PLCSTATTYPETOUL" size="large"></td>  -->
@@ -184,31 +170,7 @@
 						<!--	<td scope="STATE" size="medium"></td>
 							<td scope="QUALITE" size="medium"></td> -->
 						</tr>
-						<tr class="trClonable important"> 
-							<td scope="S3E_NUMBER" ></td>
-							<td scope="S3E_VERSION" ></td>
-							<td scope="I3EP_DESCRIPTION" ></td>
-							<td scope="I3EP_FAMILY_CODE" ></td>
-							<td scope="I3EP_GROUP_CODE" ></td>
-							<td scope="GRADE" ></td>
-							<td scope="I3EP_PACKAGE" ></td>
-				<!--		<td scope="NONE" >???</td>   --><!-- industrial price -->
-							<td scope="MATURITY" ></td>
-							<td scope="I3E_PLCSTATVAL" ></td>
-				<!--			<td scope="I3E_PLCSTATTYPETOUL" ></td>  -->
-				<!--		<td scope="NONE" >PLC Comments</td>  -->
-							<td scope="I3EP_PPL" ></td>
-							<td scope="I3EP_EXPORT_IS" ></td>
-							<td scope="I3EP_NS_CATEGORY" ></td>
-							<td scope="I3EP_CRITICALITY" ></td>
-							<td scope="I3EP_ESD_STATUS" ></td>
-							<td scope="I3EP_MSL" ></td>
-						<td scope="LEADTIME" ></td>
-					<!--	<td scope="NONE" >Space Qualified Status</td>
-						<td scope="NONE" >TID RADLAT required</td>
-						<td scope="NONE" >TNID RADLAT required</td> -->
-							<td scope="CRITICITY_GLOBAL" ></td>
-						</tr>
+				
 						<!-- Requête asychrone pour charger le tableau -->
 					</tbody>
 					</table>
@@ -269,9 +231,9 @@
 									<td scope="CRITICITY_HANDLING_STORAGE" class="ADMIN Number" size="medium"></td>
 									<td scope="REMEDE" class="ADMIN Text" size="large">
 										<p odlValue="test"></p>
-											<div style="display: none;">
-												<input type="text" />
-											</div>
+										<div style="display: none;">
+											<input type="text" />
+										</div>
 									</td>
 								</tr>
 							</tbody>
@@ -376,21 +338,10 @@
 				<div id='listInputPreferencesSources'></div>
 			</div>
 			
-			<!--
-			<div id="login" style="display : none">
-				<h2>Connexion</h2>
-				<form>
-					<span>Identifiant</span>
-					<input type="text" id="login_id"/> <br/>
-					<span>Mot de passe</span>
-					<input type="password" id="login_mdp"/><br/>
-					<input class="submit" id="login_submit" type="button" value="connexion"/>
-				</form>
-			</div>
-			-->
+			
 			<div class="footer">
 				<div style="height:100px; display:block;"></div>
-				<img src="assets/image/logo Thales Alenia Space-Leonardo.jpg" alt="logo" width="179" height="72" style="padding-left:75%;">
+			<!--	<img src="assets/image/logo Thales Alenia Space-Leonardo.jpg" alt="logo" width="179" height="72" style="padding-left:75%;">  -->
 				<div style="height:100px; display:block;"></div>
 			</div>
 				

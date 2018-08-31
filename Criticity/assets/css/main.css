@@ -13,6 +13,9 @@ html {
 		margin: 0 auto;
 		max-width: 100%;
 		width: 1200px;
+		display: inline-block;
+		position: relative;
+		left: 300px;
 	}/*
 	@media screen and (max-width: 1680px) {
 		.container {
@@ -41,13 +44,17 @@ html {
 		flex-wrap: wrap;
 		box-sizing: border-box;
 		align-items: stretch;
-		width: 100%;
+		min-width: 80%;
 	}
 	
 	
 	
 /* Header */
 	#header-wrapper {
+		display: inline-block;
+		width: -moz-available;
+		padding-right: 150px;
+		min-width: 828px;
 		background-image: -moz-linear-gradient(top, #008dab, #007294);
 		background-image: -webkit-linear-gradient(top, #008dab, #007294);
 		background-image: -ms-linear-gradient(top, #008dab, #007294);

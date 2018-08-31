@@ -9,7 +9,7 @@
 	var lineSelec = null;
 	//var filtreCategory = ["CRITICITY_GLOBAL", "ARTICLE", "MATURITY", "TYPE_ARTICLE", "GRADE", "PACL_NOM", "GRADE_MIN", "DESC_ART", "PROVENANCE"]; //TODO: Rajouter
 	//Amélioration de filtreCategory pour avoir le "nom fr" afficher et filtrer dans n'importe quelle table 
-	// Mettre "admin" : true, si un admin peut changer la valeur du champ ("isc" : true pour le commentaire
+	// Mettre "admin" : true, si un admin peut changer la valeur du champ ("isc" : true pour le commentaire)
 	var filtreCategory2 = { 
 		
 		"Version 3E" : {"table" : "PCDB_INFOS_3E", "name" : "S3E_VERSION"},
@@ -17,8 +17,6 @@
 		"Family Code" : {"table" : "PCDB_INFOS_3E", "name" : "I3EP_FAMILY_CODE"},
 		"Group Code" : {"table" : "PCDB_INFOS_3E", "name" : "I3EP_GROUP_CODE"}, 
 		
-		
-		//"industrial price" : {"table" : "PCDB_INFOS_3E", "name" : "I3EP_PACKAGE"},
 		
 		"PLC status" : {"table" : "PCDB_INFOS_3E", "name" : "I3E_PLCSTATVAL"},
 		"PPL" : {"table" : "PCDB_INFOS_3E", "name" : "I3EP_PPL"},
@@ -53,6 +51,9 @@
 		
 		
 		"Commentaires" : {"table" : "COMMENT_ICS", "name" : "TEXT_COMMENT", "ICS" : true, "admin" : true},
+		"Dernier Commentaire" : {"table" : "COMMENT_ICS", "name" : "LAST_COMMENT"},
+		"Date Commentaire" : {"table" : "COMMENT_ICS", "name" : "DATE_LOG"},
+		"Editeur Commentaire" : {"table" : "COMMENT_ICS", "name" : "ID_USER_ICS"},
 		
 		
 		"Source" : {"table" : "SOURCES", "name" : "SOURCE"}, 
@@ -64,8 +65,8 @@
 		"Maturité" : {"table" : "PACL", "name" : "MATURITY"}, 
 		
 		
-		"Lead Time" : {"table" : "PPL	", "name" : "LEADTIME"}
-		
+		"Lead Time" : {"table" : "PPL	", "name" : "LEADTIME"},
+		"PMP" : {"table" : "PPL	", "name" : "PMP"}
 		
 		// TODO: Rajouter !
 	};
@@ -88,11 +89,7 @@
 		$('#buttonHideFilters').hide();
 		$('#buttonShowFilters').show();
 	});
-/*
-	$('#buttonAddFilter').on("click", function() {
-		$('#addFilter').show();
-		$(this).hide();
-	});*/
+
 	
 	$('#addFilter').on("submit", function(e) {
 		e.preventDefault();
@@ -126,10 +123,8 @@
 				addDelButtonAction(this);
 			});	
 			clone.appendTo($('#Filter-List'));
-			/*$('#addFilter').hide();
-			$('#buttonAddFilter').show();*/
 			$('#addFilter')[0].reset();
-			// addFilter_Category.focus();  // Permet d'aller plus vite lors de la saisie des filtres mais cache la liste des filtre avec l'autocompletion... 
+			//addFilter_Category.focus();  // Permet d'aller plus vite lors de la saisie des filtres mais cache la liste des filtre avec l'autocompletion... 
 			refreshTab();
 		} else {
 			console.log('Champ incorrect');
@@ -217,26 +212,7 @@
 		$('#preferences').show();
 	});
 	
-	/*logIn*/
-	$("#login_submit").on("click", function (event) {
-		event.preventDefault();
-		$.post({
-			"url" : "./routage/login.asp",
-			"data" : {"login" : $('#login_id').val(), "password" : $('#login_mdp').val()},
-			"dataType" : "text"
-		}).then(function(response) {
-			$('#main').show();
-			$('#login').hide();
-			$('#nav_login').hide();
-			$('#nav_logout').show();
-			//console.log("reponse = "+response);
-		}).catch(function(error) {
-			console.log("Une erreur est survenue : ");
-			//console.log(error)
-		});
-	});
-
-	/*logout*/
+	/*logout*/ 
 	$('#nav_logout').on("click", function(event) {
 		$.get({
 			"url" : "./routage/logout.asp"
@@ -250,95 +226,107 @@
 	});
 	
 	/*	Preferences	*/
-	var prefCookies = getCookie("CRITICITY_"+_USERNAME);
-	prefCookies = prefCookies==""?{}:JSON.parse(prefCookies);
-	console.log(prefCookies);
 	
-	$('#tableContainer').find('th:not(th.adjustment)').each(function () {
-		var id = 'col0_'+$(this).text();
-		var scope = $(this).attr("scope");
-		var elem1;
-		if(prefCookies["hideColTab"] && prefCookies["hideColTab"][scope]) {
-			elem1 = $("<input type='checkbox'></input").attr("id", id);
+	
+	// Chargement des préférences
+	// TODO: améliorer le code en supprimant la redondance et en mettant de la délégation d'evenement
+	var pref = { "Components" : {}, "Detail" : {}, "Sources" : {} };
+	$.get({
+		"url" : "./routage/bdd.asp",
+		"data" : {"type" : "getHideCol"},
+		"dataType" : "json"
+	}).then(function(data) {
+		pref = data;
+		$.each(pref["Components"], function(scope, val) {
 			$('#tableContainer').find("[scope="+scope+"]").hide();
-			//$("#tableContainer td[scope='"+scope+"']").css('display','none');
-		} else {
-			elem1 = $("<input type='checkbox' checked></input").attr("id", id);
-		}
-		var elem2 = $("<label></label>").text($(this).text());
-		elem2.attr("for", id);
-		elem1.on("click", function (){
-			if($(this).is(":checked")) {
-				$('#tableContainer').find("[scope="+scope+"]").show();
-				//$("#tableContainer td[scope='"+scope+"']").css('display','block');
-				if(!prefCookies["hideColTab"]) prefCookies["hideColTab"] = {}
-				prefCookies["hideColTab"][scope] = false;
-				setCookie("CRITICITY_"+_USERNAME, JSON.stringify(prefCookies), 365);
-			} else {
-				$('#tableContainer').find("[scope="+scope+"]").hide();
-				//$("#tableContainer td[scope='"+scope+"']").css('display','none');
-				if(!prefCookies["hideColTab"]) prefCookies["hideColTab"] = {}
-				prefCookies["hideColTab"][scope] = true;
-				setCookie("CRITICITY_"+_USERNAME, JSON.stringify(prefCookies), 365);
-			}
 		});
-		$('#listInputPreferencesTab').append(elem1, elem2, "<br/>");
-	});
-	$('#ComponentContainer').find('th').each(function () {
-		var id = 'col1_'+$(this).text();
-		var scope = $(this).attr("scope");
-		var elem1;
-		if(prefCookies["hideColComp"] && prefCookies["hideColComp"][scope]) {
-			elem1 = $("<input type='checkbox'></input").attr("id", id); 
+		$.each(pref["Detail"], function(scope, val) {
 			$('#ComponentContainer').find("[scope="+scope+"]").hide();
-		} else {
-			elem1 = $("<input type='checkbox' checked></input").attr("id", id);
-		}
-		var elem2 = $("<label></label>").text($(this).text());
-		elem2.attr("for", id);
-		elem1.on("click", function (){
-			if($(this).is(":checked")) {
-				$('#ComponentContainer').find("[scope="+scope+"]").show();
-				if(!prefCookies["hideColComp"]) prefCookies["hideColComp"] = {}
-				prefCookies["hideColComp"][scope] = false;
-				setCookie("CRITICITY_"+_USERNAME, JSON.stringify(prefCookies), 365);
-			} else {
-				$('#ComponentContainer').find("[scope="+scope+"]").hide();
-				
-				if(!prefCookies["hideColComp"]) prefCookies["hideColComp"] = {}
-				prefCookies["hideColComp"][scope] = true;
-				setCookie("CRITICITY_"+_USERNAME, JSON.stringify(prefCookies), 365);
-			}
 		});
-		$('#listInputPreferencesComp').append(elem1, elem2, "<br/>");
-	});
-	$('#SourcesContainer').find('th').each(function () {
-		var id = 'col2_'+$(this).text();
-		var scope = $(this).attr("scope");
-		var elem1;
-		if(prefCookies["hideColSource"] && prefCookies["hideColSource"][scope]) {
-			elem1 = $("<input type='checkbox'></input").attr("id", id);
+		$.each(pref["Sources"], function(scope, val) {
 			$('#SourcesContainer').find("[scope="+scope+"]").hide();
-		} else {
-			elem1 = $("<input type='checkbox' checked></input").attr("id", id);
-		}
-		var elem2 = $("<label></label>").text($(this).text());
-		elem2.attr("for", id);
-		elem1.on("click", function (){
-			if($(this).is(":checked")) {
-				$('#SourcesContainer').find("[scope="+scope+"]").show();
-				if(!prefCookies["hideColSource"]) prefCookies["hideColSource"] = {}
-				prefCookies["hideColSource"][scope] = false;
-				setCookie("CRITICITY_"+_USERNAME, JSON.stringify(prefCookies), 365);
-			} else {
-				$('#SourcesContainer').find("[scope="+scope+"]").hide();
-				if(!prefCookies["hideColSource"]) prefCookies["hideColSource"] = {}
-				prefCookies["hideColSource"][scope] = true;
-				setCookie("CRITICITY_"+_USERNAME, JSON.stringify(prefCookies), 365);
-			}
 		});
-		$('#listInputPreferencesSources').append(elem1, elem2, "<br/>");
+	}).catch(function(err) {
+		console.log('erreur lors du chargement des préférences');
+	}).always(function () { // Création de la page préférences
+		$('#tableContainer').find('th:not(th.adjustment)').each(function () {
+			var id = 'col0_'+$(this).text();
+			var scope = $(this).attr("scope");
+			var elem1 = pref["Components"][scope] ?  $("<input type='checkbox'></input").attr("id", id) : $("<input type='checkbox' checked></input").attr("id", id);
+			var elem2 = $("<label></label>").text($(this).text());
+			elem2.attr("for", id);
+			elem1.on("click", function (){
+				if($(this).is(":checked")) {
+					$('#tableContainer').find("[scope="+scope+"]").show();
+					$.post({
+						"url" : "./routage/bdd.asp",
+						"data" : {"type" : "showCol", "tab" : "Components", "col" : scope}
+					});
+					pref["Components"][scope] = false;
+				} else {
+					$('#tableContainer').find("[scope="+scope+"]").hide();
+					$.post({
+						"url" : "./routage/bdd.asp",
+						"data" : {"type" : "hideCol", "tab" : "Components", "col" : scope}
+					});
+					pref["Components"][scope] = true;
+				}
+			});
+			$('#listInputPreferencesTab').append(elem1, elem2, "<br/>");
+		});
+		$('#ComponentContainer').find('th').each(function () {
+			var id = 'col1_'+$(this).text();
+			var scope = $(this).attr("scope");
+			var elem1 = pref["Detail"][scope] ?  $("<input type='checkbox'></input").attr("id", id) : $("<input type='checkbox' checked></input").attr("id", id);
+			var elem2 = $("<label></label>").text($(this).text());
+			elem2.attr("for", id);
+			elem1.on("click", function (){
+				if($(this).is(":checked")) {
+					$('#ComponentContainer').find("[scope="+scope+"]").show();
+					$.post({
+						"url" : "./routage/bdd.asp",
+						"data" : {"type" : "showCol", "tab" : "Detail", "col" : scope}
+					});
+					pref["Detail"][scope] = false;
+				} else {
+					$('#ComponentContainer').find("[scope="+scope+"]").hide();
+					$.post({
+						"url" : "./routage/bdd.asp",
+						"data" : {"type" : "hideCol", "tab" : "Detail", "col" : scope}
+					});
+					pref["Detail"][scope] = true;
+				}
+			});
+			$('#listInputPreferencesComp').append(elem1, elem2, "<br/>");
+		});
+		$('#SourcesContainer').find('th').each(function () {
+			var id = 'col2_'+$(this).text();
+			var scope = $(this).attr("scope");
+			var elem1 = pref["Sources"][scope] ?  $("<input type='checkbox'></input").attr("id", id) : $("<input type='checkbox' checked></input").attr("id", id);
+			var elem2 = $("<label></label>").text($(this).text());
+			elem2.attr("for", id);
+			elem1.on("click", function (){
+				if($(this).is(":checked")) {
+					$('#SourcesContainer').find("[scope="+scope+"]").show();
+					$.post({
+						"url" : "./routage/bdd.asp",
+						"data" : {"type" : "showCol", "tab" : "Sources", "col" : scope}
+					});
+					pref["Sources"][scope] = false;
+				} else {
+					$('#SourcesContainer').find("[scope="+scope+"]").hide();
+					$.post({
+						"url" : "./routage/bdd.asp",
+						"data" : {"type" : "hideCol", "tab" : "Sources", "col" : scope}
+					});
+					pref["Sources"][scope] = true;
+				}
+			});
+			$('#listInputPreferencesSources').append(elem1, elem2, "<br/>");
+		});
 	});
+	
+	
 	
 	/*	Tableau	*/
 	
@@ -347,7 +335,6 @@
 		var filtres = {};
 		var filterListe = $('#Filter-List').find('li:not(.filter-template)');
 		filterListe.each(function(){
-			//(filtres[$(this).find('Category').val()]).add({'op' : $(this).find('Operator').val(), 'value' : $(this).find('Operand').val()});
 			var cate = $(this).find('.Category').val();
 			var ope = $(this).find('.Operator').val();
 			var val = $(this).find('.Operand').val();
@@ -361,51 +348,25 @@
 		});
 		
 		//Version1
-			// défauts : cause des problème dans les colonnes quand il y a des champs null dans la bdd
+			// défauts : le select des colonnes dans la bdd doit être dans le bon ordre, sinon pb d'affichage 
 		
 		$.get({
 			"url" : "./routage/bdd.asp",
 			"data" : {"type" : "getRows", "filter" : JSON.stringify(filtres)},
 			"dataType" : "html"
 		}).then(function(data){
-			$("#tbody").find('tr:not(.important)').remove();
-			$('#tbody').append(data);
+			var tbody = $("#tbody");
+			tbody.find('tr:not(.important)').remove();
+			tbody.hide();
+			tbody.append(data);
+			$.each(pref["Components"], function(scope, val) {
+				if(val) $('#tbody').find("td[scope="+scope+"]").hide();
+			});
+			tbody.show();
 			$('#nbelem').text($('#tbody > *').length -2 + '');
 		}).catch(function(error) {
 			console.log(error);
-		});
-			
-		
-		//Version 2
-			// défauts : lourd à charger, le navigateur ne réponds pas pendant quelques secondes... 
-		/*
-		$.get({
-			"url" : "./routage/bdd.asp",
-			"data" : {"type" : "getRows", "filter" : JSON.stringify(filtres), "mime" : "json"},
-			"dataType" : "json"
-		}).then(function(datas) {
-			var tbody = $("#tbody");
-			tbody.find('tr:not(.important)').remove();
-			$.each(datas, function() {
-				var data = this;
-				var tr = $('#tbody').find('.trClonable').clone();
-				tr.removeClass('trClonable');
-				tr.removeClass('important');
-				tr.find('td').each(function() {
-					var scope = $(this).attr("scope");
-					$(this).text(data[scope]);
-				});
-				tr.show();
-				tbody.append(tr);
-			});
-			$('#nbelem').text($('#tbody > *').length -2 + '');
-		}).catch(function(error) {
-			console.log("error");
-		});
-		*/
-		
-		
-		
+		});		
 	}
 	
 	
@@ -475,43 +436,6 @@
 			console.log(error);
 		});
 	});
-	/*
-	$('#tbodyComponent').find("td[scope = TEXT_COMMENT] p").on("dblclick", function() {
-		if(!(_ICS || _ADMIN)) return;
-		$(this).parent().children().last().show();
-		$(this).hide();
-	});*/
-	
-	
-	/*
-	$('#formComment').submit(function(event) {
-		event.preventDefault();
-		var form = $(this);
-		form.parent().children('p').show();
-		form.hide();
-		//var scope = form.parent().attr("scope");
-		var val = form.find("input[type=text]").val();
-		var id = form.parent().parent().find('td[scope = Part-Number] a').text();console.log(id);
-		$.post({
-			//"method" : "POST",
-			"url" : "./routage/bdd.asp",
-			"data" : {
-						"type" : "addComment",
-						"id" : id,
-						"val" : val
-					},
-			"Content-Type" : "text/plain;charset='utf-8'"
-		}).then(function(data) {
-			form.parent().children('p').text(val);
-			(form[0]).reset();
-		}).catch(function(error) {
-			(form[0]).reset();
-			console.log('error');
-			//console.log(error);
-		});
-		
-		
-	});*/
 	
 	
 	if(!(_ADMIN || _ICS)) {
@@ -589,7 +513,7 @@
 			$.post({
 				"url" : "./routage/bdd.asp",
 				"data" : {
-							"type" : "updateCriticity2",
+							"type" : "updateCriticity",
 							"id" : id,
 							"values" : JSON.stringify(values)
 						},
@@ -603,13 +527,18 @@
 			}).catch(function(error) {
 				// erreur => pas eu de changement en bdd => on remet l'ancienne valeur
 				console.log('error update');
-				//TODO: anciennes valeurs !! 
+				//remettre les anciennes valeurs !! 
+				/*tbody.find("td.ADMIN:not(td.ICS)").each(function() {
+					var p = $(this).children('p');
+					p.text(p.attr("oldValue")); //Pas forcement la bonne valeur si il y a eu plusieurs changement...
+				});*/
+				$('#tbody').find("tr.selected td[scope=CRITICITY_GLOBAL]").click(); // Refresh avec les valeurs de la bdd
 			});
 		}
 	});
 	
 	
-	
+	// annulation des derniers changements
 	$('#annulComponent').on("click", function() {
 		var tbody = $("#tbodyComponent");
 		var id = tbody.find("td[scope=Part-Number] a").text();
@@ -644,7 +573,7 @@
 			$.post({
 				"url" : "./routage/bdd.asp",
 				"data" : {
-							"type" : "updateCriticity2",
+							"type" : "updateCriticity",
 							"id" : id,
 							"values" : JSON.stringify(values)
 						},
@@ -660,53 +589,13 @@
 				$('#tbody').find("tr.selected td[scope=CRITICITY_GLOBAL]").text(data["CRITICITY_GLOBAL"]);
 			}).catch(function(error) {
 				// erreur => pas eu de changement en bdd => on remet l'ancienne valeur
-				console.log('error update');
+				console.log('error annulation');
 				//TODO: anciennes valeurs !! 
 			});
 		}
 	});
 	
 	
-	
-	/*
-	$('#tbodyComponent').on("click", "tr td input.annul", function() {
-		var butAnnul = $(this);
-		butAnnul.parent().parent().parent().children('p').show()
-		butAnnul.parent().parent().hide();
-	});*/
-	
-	
-	/*
-	$('#tbodyComponent').on("submit", "tr td.ADMIN form", function(e) {
-		e.preventDefault();
-		var $form = $(this);
-		var value = $form.find("input[type = number]").val() || $form.find("input[type = text]").val();
-		if(!value) return;
-		var scope = $form.parent().attr("scope");
-		var id = $('#tbodyComponent').find("td[scope=Part-Number] a").text();
-		if(!id) return;
-		$.post({
-			"url" : "./routage/bdd.asp",
-			"data" : {
-						"type" : "updateCriticity",
-						"id" : id,
-						"scope" : scope,
-						"value" : value
-					},
-			"dataType" : "json",
-		}).then(function(data) {
-			//TODO: Récupérer la nouvelle criticité Global et l'afficher dans les 2 tableaux !
-			$form.parent().children('p').text(value);
-			$('#tbodyComponent').find("td[scope = CRITICITY_GLOBAL]").text(data["CRITICITY_GLOBAL"]);
-			$form.find('input.annul').click();
-			$('#tbody').find("tr.selected td[scope=CRITICITY_GLOBAL]").text(data["CRITICITY_GLOBAL"]);
-		}).catch(function(error) {	
-			console.log(error);
-			$form.find('input.annul').click();
-		});
-	});
-	
-	*/
 	
 
 	/*Quick update*/
@@ -732,13 +621,12 @@
 		var filtres = {};
 		var filterListe = $('#Filter-List').find('li:not(.filter-template)');
 		filterListe.each(function(){
-			//(filtres[$(this).find('Category').val()]).add({'op' : $(this).find('Operator').val(), 'value' : $(this).find('Operand').val()});
 			var f = $(this);
 			var cate = f.find('.Category').val();
 			var ope = f.find('.Operator').val();
 			var val = f.find('.Operand').val();
 			if (filtreCategory2[cate]) {
-				cate = filtreCategory2[cate]["name"]; // accepte le "nom fr" et la colonne de la bdd //hmm... ou pas... vérifier
+				cate = filtreCategory2[cate]["name"];
 			}
 			
 			
@@ -770,6 +658,7 @@
 					}
 		}).then(function(res) {
 			$('#quickUpdate')[0].reset();
+			refreshTab();
 			console.log(res)
 		}).catch(function(err) {
 			console.log("erreur");
@@ -798,38 +687,45 @@
 	});
 	
 	
-	
-	
-	
-	
-	
 	$('#quickUpdateAnnul').on("click", function() { //ne fait qu'un reset
 		$('#quickUpdate')[0].reset();
 	});
 	
-	
-	function setCookie(cname,cvalue,exdays) {
-		var d = new Date();
-		d.setTime(d.getTime() + (exdays*24*60*60*1000));
-		var expires = "expires=" + d.toGMTString();
-		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-	}
-
-	function getCookie(cname) {
-		var name = cname + "=";
-		var decodedCookie = decodeURIComponent(document.cookie);
-		var ca = decodedCookie.split(';');
-		for(var i = 0; i < ca.length; i++) {
-			var c = ca[i];
-			while (c.charAt(0) == ' ') {
-				c = c.substring(1);
-			}
-			if (c.indexOf(name) == 0) {
-				return c.substring(name.length, c.length);
-			}
-		}
-		return "";
-	}
+	/*Exportation du  tableau en csv */
+	$('#nav_expot').on("click", function(e) {
+		// generation
+		var txt = "";
+		$('#thead').find("tr").each(function(){
+			var tr = $(this);
+			tr.find("th:not([style='display: none;'])").each(function() {
+				var th = $(this);
+				txt += th.text() + ";"
+			});
+			txt += "\n"
+		});
+		
+		$('#tbody').find("tr:not(.important)").each(function(){
+			var tr = $(this);
+			tr.find("td:not([style='display: none;'])").each(function() {
+				var td = $(this);
+				txt += td.text() + ";"
+			});
+			txt += "\n"
+		});
+		
+		$.post({
+			"url" : "routage/export.asp", 
+			"data" : {"datas" : txt}, 
+			"dataType" : "text", 
+			"Content-Type" : "text/plain;charset='utf-8'" //Si pb d'encodage essayer avec : "mimeType": 'text/plain; charset= Windows-1252',
+		}).then(function(file) {
+			window.open(file,"_blank", null);
+		}).catch(function(err) {
+			console.log("erreur export");
+		});
+		
+		
+	});
 	
 
 
